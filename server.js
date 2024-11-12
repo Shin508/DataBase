@@ -60,4 +60,4 @@ app.get('/logout', (req, res) => {
   req.logout(() => res.redirect('/'));
 });
 
-app.listen(3000, () => console.log('Server avviato su http://localhost:3000'));
+app.listen(3000, () => console.log('Server avviato su https://shin508.github.io/DataBase/'));
