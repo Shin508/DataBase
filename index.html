@@ -3,81 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Area Privata</title>
+    <title>Database Polizia - Area Privata</title>
     <style>
+        /* Stili di base per l’interfaccia */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #121212;
+            color: #fff;
             margin: 0;
             padding: 0;
         }
         header {
-            background-color: #333;
-            color: #fff;
+            background-color: #1f1f1f;
+            color: #0f9be3;
             text-align: center;
-            padding: 10px 0;
+            padding: 15px 0;
+            font-size: 1.8em;
+            letter-spacing: 1px;
         }
         .container {
-            width: 80%;
+            width: 90%;
+            max-width: 1200px;
             margin: 20px auto;
             padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #1b1b1b;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
-        .login-form, .private-area {
-            width: 100%;
-            max-width: 400px;
+        
+        /* Stili del form di accesso */
+        .login-form {
+            text-align: center;
+            max-width: 300px;
             margin: 0 auto;
         }
         .login-form input {
             width: 100%;
             padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
         }
         .login-form button {
             width: 100%;
             padding: 10px;
-            background-color: #4CAF50;
-            color: white;
+            background-color: #007bff;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
+            color: white;
+            font-weight: bold;
         }
         .login-form button:hover {
-            background-color: #45a049;
+            background-color: #0056b3;
         }
+        
+        /* Sezioni di dati dell’area privata */
         .private-area {
             display: none;
+            padding-top: 20px;
         }
-        .private-area.active {
-            display: block;
+        .section {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
         }
-        .private-area h2 {
-            text-align: center;
+        .section h2 {
+            font-size: 1.5em;
+            color: #4caf50;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+        .section p {
+            margin: 5px 0;
+            color: #bbb;
+        }
+        .section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .section table, th, td {
+            border: 1px solid #333;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #333;
+            color: #0f9be3;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Area Privata</h1>
-</header>
+<header>Database Polizia di Stato - Area Privata</header>
 
 <div class="container">
+    <!-- Form di login -->
     <div class="login-form">
-        <h2>Accedi all'area privata</h2>
+        <h2>Accedi all'area riservata</h2>
         <input type="text" id="username" placeholder="Nome utente" required>
         <input type="password" id="password" placeholder="Password" required>
         <button onclick="login()">Accedi</button>
         <p id="login-error" style="color: red; text-align: center; display: none;">Credenziali errate</p>
     </div>
 
+    <!-- Area privata con varie sezioni -->
     <div class="private-area">
-        <h2>Benvenuto nell'Area Privata</h2>
-        <p>Questo è un contenuto riservato agli utenti autenticati.</p>
+        <div class="section" id="turni">
+            <h2>Turni</h2>
+            <table>
+                <tr><th>Agente</th><th>Data</th><th>Turno</th></tr>
+                <tr><td>M. Rossi</td><td>12/11/2024</td><td>Mattina</td></tr>
+                <tr><td>G. Verdi</td><td>12/11/2024</td><td>Pomeriggio</td></tr>
+            </table>
+        </div>
+
+        <div class="section" id="denunce">
+            <h2>Denunce</h2>
+            <p><strong>Data:</strong> 11/11/2024</p>
+            <p><strong>Denunciante:</strong> A. Bianchi</p>
+            <p><strong>Oggetto:</strong> Furto di proprietà</p>
+            <p><strong>Note:</strong> Descrizione dettagliata dell'accaduto...</p>
+        </div>
+
+        <div class="section" id="report">
+            <h2>Report Generali</h2>
+            <p>Sintesi delle attività recenti e delle segnalazioni. Questo modulo può contenere riepiloghi generali delle attività svolte.</p>
+        </div>
+
         <button onclick="logout()">Esci</button>
     </div>
 </div>
@@ -91,7 +151,7 @@
         // Esempio di credenziali fisse per il login (da modificare per un sistema reale)
         if (username === 'admin' && password === '1234') {
             document.querySelector('.login-form').style.display = 'none';
-            document.querySelector('.private-area').classList.add('active');
+            document.querySelector('.private-area').style.display = 'block';
             document.getElementById('login-error').style.display = 'none';
         } else {
             document.getElementById('login-error').style.display = 'block';
@@ -101,7 +161,7 @@
     // Funzione di logout
     function logout() {
         document.querySelector('.login-form').style.display = 'block';
-        document.querySelector('.private-area').classList.remove('active');
+        document.querySelector('.private-area').style.display = 'none';
         document.getElementById('username').value = '';
         document.getElementById('password').value = '';
     }
