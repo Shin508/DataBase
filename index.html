@@ -142,30 +142,7 @@
     </div>
 </div>
 
-<script>
-    // Funzione di login
-    function login() {
-        var username = document.getElementById('username').value;
-        var password = document.getElementById('password').value;
-
-        // Esempio di credenziali fisse per il login (da modificare per un sistema reale)
-        if (username === 'admin' && password === '1234') {
-            document.querySelector('.login-form').style.display = 'none';
-            document.querySelector('.private-area').style.display = 'block';
-            document.getElementById('login-error').style.display = 'none';
-        } else {
-            document.getElementById('login-error').style.display = 'block';
-        }
-    }
-
-    // Funzione di logout
-    function logout() {
-        document.querySelector('.login-form').style.display = 'block';
-        document.querySelector('.private-area').style.display = 'none';
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-    }
-</script>
+<script src="server.js"></script>
 
 </body>
 </html>

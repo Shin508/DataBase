@@ -22,7 +22,7 @@ app.use(passport.session());
 passport.use(new DiscordStrategy({
   clientID: '1305836982122975232',  // Sostituisci con il tuo Client ID
   clientSecret: '90fo0GOq-LswhgY0qmdSOmZX2h_LVLZ8',  // Sostituisci con il tuo Client Secret
-  callbackURL: 'http://localhost:3000/auth/discord/callback',  // L'URL di callback
+  callbackURL: 'https://discord.com/oauth2/authorize?client_id=1305836982122975232&response_type=code&redirect_uri=https%3A%2F%2Fshin508.github.io%2FDataBase%2F&scope=identify+guilds.members.read',  // L'URL di callback
   scope: ['identify', 'guilds', 'guilds.members.read']  // Aggiungi permesso per leggere i membri
 }, (accessToken, refreshToken, profile, done) => {
   // Questo callback verrà chiamato dopo che l'utente ha autenticato con Discord
