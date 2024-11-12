@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area Privata</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .login-form, .private-area {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .login-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .login-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-form button:hover {
+            background-color: #45a049;
+        }
+        .private-area {
+            display: none;
+        }
+        .private-area.active {
+            display: block;
+        }
+        .private-area h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Area Privata</h1>
+</header>
+
+<div class="container">
+    <div class="login-form">
+        <h2>Accedi all'area privata</h2>
+        <input type="text" id="username" placeholder="Nome utente" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button onclick="login()">Accedi</button>
+        <p id="login-error" style="color: red; text-align: center; display: none;">Credenziali errate</p>
+    </div>
+
+    <div class="private-area">
+        <h2>Benvenuto nell'Area Privata</h2>
+        <p>Questo è un contenuto riservato agli utenti autenticati.</p>
+        <button onclick="logout()">Esci</button>
+    </div>
+</div>
+
+<script>
+    // Funzione di login
+    function login() {
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+
+        // Esempio di credenziali fisse per il login (da modificare per un sistema reale)
+        if (username === 'admin' && password === '1234') {
+            document.querySelector('.login-form').style.display = 'none';
+            document.querySelector('.private-area').classList.add('active');
+            document.getElementById('login-error').style.display = 'none';
+        } else {
+            document.getElementById('login-error').style.display = 'block';
+        }
+    }
+
+    // Funzione di logout
+    function logout() {
+        document.querySelector('.login-form').style.display = 'block';
+        document.querySelector('.private-area').classList.remove('active');
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+    }
+</script>
+
+</body>
+</html>
