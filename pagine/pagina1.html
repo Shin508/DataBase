@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Polizia - Area Privata</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        header {
+            background-color: #1f1f1f;
+            color: #0f9be3;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 1.8em;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            margin: 20px;
+        }
+
+        .main-content {
+            width: 75%;
+            padding: 20px;
+            background-color: #1b1b1b;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar {
+            width: 25%;
+            padding: 20px;
+            background-color: #1b1b1b;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            margin-left: 20px;
+        }
+
+        .sidebar h2 {
+            font-size: 1.6em;
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .sidebar button:hover {
+            background-color: #0056b3;
+        }
+
+        .turnazione input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+            border: none;
+        }
+
+        .turnazione button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+        }
+
+        .turnazione button:hover {
+            background-color: #218838;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 250px;
+        }
+    </style>
+    <!-- Includi Chart.js per il grafico a torta -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header>Database Polizia di Stato - Area Privata</header>
+
+<div class="container">
+    <!-- Contenuto principale -->
+    <div class="main-content">
+        <h2>Benvenuto nell'Area Privata</h2>
+        <p>Inserisci i dati nel menu laterale per gestire la turnazione e visualizzare il profilo.</p>
+    </div>
+
+    <!-- Barra laterale -->
+    <div class="sidebar">
+        <div class="turnazione">
+            <h2>Turnazione</h2>
+            <label for="oreLavorate">Ore Lavorate:</label>
+            <input type="number" id="oreLavorate" placeholder="Inserisci le ore" />
+            <button onclick="aggiornaOre()">Aggiungi Ore</button>
+            <p id="totalOre" style="color: #fff; margin-top: 10px;">Ore Totali: 0</p>
+        </div>
+
+        <div class="profilo">
+            <h2>Profilo</h2>
+            <div class="chart-container">
+                <canvas id="oreChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Inizializza il grafico a torta
+var ctx = document.getElementById('oreChart').getContext('2d');
+var oreChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Ore Lavorate', 'Ore Rimanenti'],
+        datasets: [{
+            label: 'Ore Lavorate vs Ore Rimanenti',
+            data: [0, 40],  // 0 ore lavorate inizialmente, 40 ore totali
+            backgroundColor: ['#4caf50', '#ccc'],
+            borderColor: ['#4caf50', '#ccc'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.raw + ' ore';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Funzione per aggiornare le ore lavorate e il grafico
+var totalHours = 0;
+function aggiornaOre() {
+    var ore = document.getElementById('oreLavorate').value;
+    if (ore && !isNaN(ore)) {
+        totalHours += parseInt(ore);
+        document.getElementById('totalOre').innerText = 'Ore Totali: ' + totalHours;
+
+        // Aggiorna il grafico con la nuova quantità di ore
+        var oreRimanenti = 40 - totalHours;  // Supponiamo che 40 ore sia il limite
+        oreChart.data.datasets[0].data = [totalHours, oreRimanenti];
+        oreChart.update();
+    }
+    document.getElementById('oreLavorate').value = ''; // Pulisci il campo ore
+}
+</script>
+
+</body>
+</html>

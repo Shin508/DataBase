@@ -140,6 +140,22 @@ function redirectToDiscord() {
     window.location.href = discordOAuthUrl;
 }
 
+// Funzione per gestire il callback di Discord e il codice di accesso
+window.onload = function() {
+    // Controlla se c'è un "code" nell'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    
+    if (code) {
+        // Qui dovresti scambiare il "code" con il token di accesso tramite una chiamata API
+        // Ma per semplicità, supponiamo che il login sia riuscito:
+        alert('Autenticazione avvenuta con successo!');
+        
+        // Dopo l'autenticazione, puoi reindirizzare l'utente a pagina1.html
+        window.location.href = 'pagina1.html';
+    }
+}
+
 // Funzione di logout
 function logout() {
     document.querySelector('.login-form').style.display = 'block';
