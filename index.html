@@ -37,15 +37,6 @@
             max-width: 300px;
             margin: 0 auto;
         }
-        .login-form input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 5px;
-            background-color: #333;
-            color: #fff;
-        }
         .login-form button {
             width: 100%;
             padding: 10px;
@@ -107,11 +98,9 @@
 <div class="container">
     <!-- Form di login -->
     <div class="login-form">
-        <h2>Accedi all'area riservata</h2>
-        <input type="text" id="username" placeholder="Nome utente" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button onclick="login()">Accedi</button>
-        <p id="login-error" style="color: red; text-align: center; display: none;">Credenziali errate</p>
+        <h2>Accedi con Discord</h2>
+        <!-- Quando clicchi sul pulsante Accedi, reindirizza alla pagina di autenticazione di Discord -->
+        <button onclick="redirectToDiscord()">Accedi</button>
     </div>
 
     <!-- Area privata con varie sezioni -->
@@ -142,7 +131,21 @@
     </div>
 </div>
 
-<script src="server.js"></script>
+<script>
+// Funzione per reindirizzare l'utente a Discord per l'autenticazione
+function redirectToDiscord() {
+    // Costruisci l'URL di autorizzazione
+    const discordOAuthUrl = "https://discord.com/oauth2/authorize?client_id=1305836982122975232&response_type=code&redirect_uri=https%3A%2F%2Fshin508.github.io%2FDataBase%2F&scope=identify+guilds.members.read";
+    // Reindirizza l'utente alla pagina di login di Discord
+    window.location.href = discordOAuthUrl;
+}
+
+// Funzione di logout
+function logout() {
+    document.querySelector('.login-form').style.display = 'block';
+    document.querySelector('.private-area').style.display = 'none';
+}
+</script>
 
 </body>
 </html>
