@@ -1,115 +1,134 @@
 const express = require('express');
-const passport = require('passport');
-const DiscordStrategy = require('passport-discord').Strategy;
 const session = require('express-session');
+const passport = require('passport');
 const axios = require('axios');
+const { OAuth2Strategy } = require('passport-discord');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Configura la sessione
-app.use(session({
-  secret: 'mysecret',
-  resave: false,
-  saveUninitialized: true
+passport.use(new OAuth2Strategy({
+    clientID: '1305836982122975232',
+    clientSecret: '8lGRPTNB-vIhrQ8JL1Amb1P6XE6C--vg',
+    callbackURL: 'YOUR_DISCORD_CALLBACK_URL',
+    scope: ['identify', 'guilds'] // Aggiungi qui altri scope se necessari
+}, (accessToken, refreshToken, profile, done) => {
+    // Recupera i dati del profilo Discord e aggiungili alla sessione
+    profile.accessToken = accessToken;
+    return done(null, profile);
 }));
 
-// Configura passport
+// Sessione
+app.use(session({
+    secret: 'YOUR_SECRET_KEY',
+    resave: false,
+    saveUninitialized: false
+}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Configura la strategia Discord
-passport.use(new DiscordStrategy({
-  clientID: '1305836982122975232',  // Sostituisci con il tuo Client ID
-  clientSecret: '90fo0GOq-LswhgY0qmdSOmZX2h_LVLZ8',  // Sostituisci con il tuo Client Secret
-  callbackURL: 'https://discord.com/oauth2/authorize?client_id=1305836982122975232&response_type=code&redirect_uri=https%3A%2F%2Fshin508.github.io%2FDataBase%2F&scope=identify+guilds.members.read',  // L'URL di callback
-  scope: ['identify', 'guilds', 'guilds.members.read']  // Aggiungi permesso per leggere i membri
-}, (accessToken, refreshToken, profile, done) => {
-  // Questo callback verrà chiamato dopo che l'utente ha autenticato con Discord
-  // Salva l'accessToken, che userai per fare richieste API a Discord
-  profile.accessToken = accessToken;
-  return done(null, profile);
-}));
+// Serializzazione e deserializzazione dell'utente
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((obj, done) => done(null, obj));
 
-// Serializzazione dell'utente
-passport.serializeUser((user, done) => {
-  done(null, user);
+// Rotta per il login
+app.get('/login', (req, res) => {
+    res.redirect('/auth/discord');
 });
 
-// Deserializzazione dell'utente
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
-});
-
-// Rotta di login con Discord
+// Rotta per la callback di Discord OAuth2
 app.get('/auth/discord',
-  passport.authenticate('discord', { scope: ['identify', 'guilds', 'guilds.members.read'] }));
+    passport.authenticate('discord', { scope: ['identify', 'guilds'] }),
+    (req, res) => {
+        // Successo dell'autenticazione
+        res.redirect('/');
+    });
 
-// Rotta di callback dopo l'autenticazione con Discord
+// Rotta per gestire il ritorno della callback di Discord
 app.get('/auth/discord/callback',
-  passport.authenticate('discord', { failureRedirect: '/' }),
-  async (req, res) => {
-    // Una volta che l'utente è autenticato, ottieni i suoi ruoli
-    const userId = req.user.id;
-    const accessToken = req.user.accessToken;
+    passport.authenticate('discord', { failureRedirect: '/' }),
+    (req, res) => {
+        res.redirect('/');
+    });
 
-    // Ottieni i server (guilds) dell'utente
-    try {
-      const guilds = req.user.guilds; // Questo ti dà i server a cui appartiene l'utente
-      
-      // Esegui una richiesta API per ottenere i membri di ciascun server e i loro ruoli
-      for (const guild of guilds) {
-        const guildId = guild.id;
-        const response = await axios.get(`https://discord.com/api/v10/guilds/${guildId}/members/${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          }
-        });
-
-        // Ottenere i ruoli dell'utente nel server
-        const roles = response.data.roles;  // Questo ti dà l'array dei ruoli
-
-        // Ora puoi fare quello che vuoi con i ruoli
-        console.log(`Ruoli dell'utente nel server ${guild.name}: ${roles.join(', ')}`);
-
-        // Aggiungi la logica per controllare se l'utente ha il ruolo giusto
-        if (roles.includes('1305843626613411840')) {
-          console.log('L\'utente ha il ruolo richiesto!');
-          // Permetti l'accesso o fai qualcosa
-        } else {
-          console.log('L\'utente non ha il ruolo richiesto');
-          // Negare l'accesso o fare qualcos'altro
+// Funzione per il controllo dei ruoli
+function checkRole(role) {
+    return (req, res, next) => {
+        if (!req.isAuthenticated()) {
+            return res.redirect('/login'); // Se non autenticato, redirigi al login
         }
-      }
-    } catch (error) {
-      console.error('Errore nel recuperare i ruoli:', error);
-    }
 
-    // Autenticazione riuscita, reindirizza l'utente al dashboard
-    res.redirect('/dashboard');
-  });
+        // Controlla i ruoli dell'utente
+        const userRoles = req.user.guilds; // Contiene la lista di server/guilds a cui l'utente appartiene
 
-// Rotta di dashboard protetta
-app.get('/dashboard', (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect('/');
-  }
-  res.send(`Benvenuto, ${req.user.username}!`);
+        let hasRole = false;
+
+        // Cicla attraverso i server a cui l'utente è iscritto e controlla se ha il ruolo
+        for (const guild of userRoles) {
+            if (guild.id === '1061241675424481382') { // Verifica se l'utente è nel server specificato
+                // Puoi sostituire con una chiamata API Discord per ottenere i ruoli dell'utente
+                axios.get(`https://discord.com/api/v9/guilds/${guild.id}/members/${req.user.id}`, {
+                    headers: {
+                        'Authorization': `Bot MTMwNTgzNjk4MjEyMjk3NTIzMg.Gtn5YD.lbSWLYsJZTtSvVZuUQOJKk_pGC-15KS2WBhy0Y`
+                    }
+                }).then(response => {
+                    const memberRoles = response.data.roles;
+                    if (memberRoles.includes(role)) {
+                        hasRole = true;
+                    }
+                    if (!hasRole) {
+                        return res.redirect('/no-permission'); // Se l'utente non ha il ruolo richiesto
+                    }
+                    next();
+                }).catch(err => {
+                    console.error(err);
+                    return res.redirect('/no-permission');
+                });
+            }
+        }
+
+        if (!hasRole) {
+            return res.redirect('/no-permission'); // Se l'utente non ha il ruolo richiesto
+        }
+
+        next(); // Se il controllo ruoli passa, continua
+    };
+}
+
+// Pagina protetta da ruolo
+app.get('/protected', checkRole('1305843626613411840'), (req, res) => {
+    res.send('Accesso consentito alla pagina protetta!');
+});
+
+// Pagina senza permessi
+app.get('/no-permission', (req, res) => {
+    res.send('Non hai il permesso di accedere a questa pagina.');
 });
 
 // Rotta di logout
 app.get('/logout', (req, res) => {
-  req.logout((err) => {
-    res.redirect('/');
-  });
+    req.logout((err) => {
+        if (err) { return next(err); }
+        res.redirect('/');
+    });
 });
 
-// Rotta di home (pagina principale)
+// Homepage
 app.get('/', (req, res) => {
-  res.send('<a href="/auth/discord">Login con Discord</a>');
+    if (!req.isAuthenticated()) {
+        return res.send('<a href="/login">Login con Discord</a>');
+    }
+
+    res.send(`
+        <h1>Ciao, ${req.user.username}</h1>
+        <a href="/protected">Vai alla pagina protetta</a>
+        <br>
+        <a href="/logout">Logout</a>
+    `);
 });
 
-// Avvia il server
+// Avvio del server
 app.listen(PORT, () => {
-  console.log(`Server avviato su http://localhost:${PORT}`);
+    console.log(`Server in esecuzione su https://shin508.github.io/DataBase/elements.html:${PORT}`);
 });
