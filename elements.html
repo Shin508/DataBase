@@ -14,7 +14,7 @@
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             height: 100vh;
             flex-direction: column;
         }
@@ -32,10 +32,9 @@
 
         .container {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             width: 90%;
             margin-top: 20px;
-            position: relative;
         }
 
         .main-content {
@@ -43,50 +42,52 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
             padding: 20px;
-            width: 60%;
-            transition: transform 0.5s ease;
+            width: 75%;
+            transition: all 0.5s ease;
+            height: 80vh;
         }
 
-        .sidebar-buttons {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .sidebar {
+            width: 20%;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            margin-left: 20px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
 
-        .sidebar-buttons button {
+        .sidebar button {
             background-color: #4caf50;
             border: none;
             padding: 15px;
             color: white;
             font-size: 1.1em;
-            margin: 5px;
+            margin: 10px 0;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
-        .sidebar-buttons button:hover {
+        .sidebar button:hover {
             background-color: #388e3c;
         }
 
         .expand-section {
             display: none;
-            position: absolute;
-            top: 20px;
-            left: 0;
-            width: 60%;
             background-color: #1b1b1b;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
             padding: 20px;
-            transition: transform 0.5s ease;
+            transition: all 0.5s ease;
+            margin-top: 20px;
+            height: 50vh;
+            overflow-y: auto;
         }
 
         .expand-section.active {
             display: block;
-            transform: translateX(0);
         }
 
         .expand-section h2 {
@@ -107,24 +108,24 @@
             transition: background-color 0.3s;
         }
 
-        .turnazione button, .sidebar-buttons button {
+        .turnazione button {
             background-color: #28a745;
         }
 
-        .turnazione button:hover, .sidebar-buttons button:hover {
+        .turnazione button:hover {
             background-color: #218838;
         }
 
-        .tabella-container {
+        .chart-container {
             width: 100%;
-            margin-top: 20px;
+            height: 300px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: #222;
-            transition: transform 0.2s ease-in-out;
+            margin-top: 20px;
         }
 
         table th, table td {
@@ -143,6 +144,57 @@
             cursor: pointer;
         }
 
+        .footer {
+            background-color: #1f1f1f;
+            color: #4caf50;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            position: relative;
+            width: 100%;
+        }
+
+        .card {
+            background-color: #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            color: #4caf50;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #ccc;
+            font-size: 1.1em;
+        }
+
+        .card:hover {
+            background-color: #444;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            font-size: 1.1em;
+            color: #ccc;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: white;
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
@@ -151,10 +203,23 @@
 
 <div class="container">
     <!-- Contenuto principale -->
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
         <h2>Benvenuto nell'Area Privata</h2>
         <p>Seleziona una sezione dal menu laterale per gestire la turnazione o visualizzare il profilo.</p>
 
+        <!-- Card con informazioni -->
+        <div class="card">
+            <h3>Gestione Turnazione</h3>
+            <p>Visualizza e aggiorna le ore lavorate nella turnazione settimanale. Puoi inserire le tue ore di servizio e vedere un grafico delle tue attività.</p>
+        </div>
+        
+        <!-- Card con informazioni -->
+        <div class="card">
+            <h3>Visualizza Profilo</h3>
+            <p>Accedi ai dettagli del tuo profilo, inclusi i tuoi orari, le tue performance e altre informazioni personali.</p>
+        </div>
+
+        <!-- Tabella per navigazione -->
         <div class="tabella-container">
             <table id="infoTable">
                 <thead>
@@ -172,38 +237,52 @@
                         <td><i class="fas fa-user"></i> Profilo</td>
                         <td>Visualizza i dettagli del profilo</td>
                     </tr>
+                    <tr onclick="showStatistiche()">
+                        <td><i class="fas fa-chart-line"></i> Statistiche</td>
+                        <td>Visualizza le tue statistiche</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Pulsanti laterali per selezionare la sezione -->
-    <div class="sidebar-buttons">
+    <!-- Barra laterale per selezionare la sezione -->
+    <div class="sidebar">
         <button onclick="toggleSection('turnazione')">Turnazione</button>
         <button onclick="toggleSection('profilo')">Profilo</button>
+        <button onclick="toggleSection('statistiche')">Statistiche</button>
     </div>
+</div>
 
-    <!-- Sezioni espandibili -->
-    <div class="expand-section" id="turnazioneSection">
-        <h2>Turnazione</h2>
+<!-- Sezioni espandibili -->
+<div class="expand-section" id="turnazioneSection">
+    <h2>Turnazione</h2>
+    <div class="input-group">
         <label for="oreLavorate">Ore Lavorate:</label>
         <input type="number" id="oreLavorate" placeholder="Inserisci le ore" />
+    </div>
+    <div class="input-group">
         <button onclick="aggiornaOre()">Aggiungi Ore</button>
-        <p id="totalOre" style="color: #fff; margin-top: 10px;">Ore Totali: 0</p>
     </div>
-
-    <div class="expand-section" id="profiloSection">
-        <h2>Profilo</h2>
-        <div class="chart-container">
-            <canvas id="oreChart"></canvas>
-        </div>
+    <p id="totalOre" style="color: #fff;">Ore Totali: 0</p>
+    <div class="chart-container">
+        <canvas id="oreChart"></canvas>
     </div>
+</div>
 
+<div class="expand-section" id="profiloSection">
+    <h2>Profilo</h2>
+    <p>Dettagli del profilo verranno qui mostrati.</p>
+</div>
+
+<div class="expand-section" id="statisticheSection">
+    <h2>Statistiche</h2>
+    <p>Le tue statistiche generali vengono visualizzate qui.</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Funzione per mostrare una sezione espandibile
+// Funzione per mostrare la sezione selezionata
 function toggleSection(section) {
     const sections = document.querySelectorAll('.expand-section');
     sections.forEach((sec) => {
@@ -222,7 +301,7 @@ var oreChart = new Chart(ctx, {
         labels: ['Ore Lavorate', 'Ore Rimanenti'],
         datasets: [{
             label: 'Ore Lavorate vs Ore Rimanenti',
-            data: [0, 40],  // 0 ore lavorate inizialmente, 40 ore totali
+            data: [0, 40],
             backgroundColor: ['#4caf50', '#ccc'],
             borderColor: ['#4caf50', '#ccc'],
             borderWidth: 1
@@ -253,12 +332,11 @@ function aggiornaOre() {
         totalHours += parseInt(ore);
         document.getElementById('totalOre').innerText = 'Ore Totali: ' + totalHours;
 
-        // Aggiorna il grafico con la nuova quantità di ore
-        var oreRimanenti = 40 - totalHours;  // Supponiamo che 40 ore sia il limite
+        var oreRimanenti = 40 - totalHours; 
         oreChart.data.datasets[0].data = [totalHours, oreRimanenti];
         oreChart.update();
     }
-    document.getElementById('oreLavorate').value = ''; // Pulisci il campo ore
+    document.getElementById('oreLavorate').value = '';
 }
 </script>
 
