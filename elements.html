@@ -4,103 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Database Polizia - Area Privata</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: #121212;
             color: #fff;
             margin: 0;
             padding: 0;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
         }
 
         header {
             background-color: #1f1f1f;
             color: #0f9be3;
             text-align: center;
-            padding: 15px 0;
-            font-size: 1.8em;
+            padding: 20px;
+            font-size: 2em;
             letter-spacing: 1px;
             width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
 
         .container {
             display: flex;
-            flex: 1;
-            margin: 20px;
+            justify-content: center;
+            width: 90%;
+            margin-top: 20px;
+            position: relative;
         }
 
         .main-content {
-            width: 75%;
-            padding: 20px;
             background-color: #1b1b1b;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            width: 60%;
+            transition: transform 0.5s ease;
         }
 
-        .sidebar {
-            width: 25%;
-            padding: 20px;
+        .sidebar-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-buttons button {
+            background-color: #4caf50;
+            border: none;
+            padding: 15px;
+            color: white;
+            font-size: 1.1em;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-buttons button:hover {
+            background-color: #388e3c;
+        }
+
+        .expand-section {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 60%;
             background-color: #1b1b1b;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            margin-left: 20px;
+            padding: 20px;
+            transition: transform 0.5s ease;
         }
 
-        .sidebar h2 {
+        .expand-section.active {
+            display: block;
+            transform: translateX(0);
+        }
+
+        .expand-section h2 {
             font-size: 1.6em;
             color: #4caf50;
             margin-bottom: 20px;
         }
 
-        .sidebar button {
+        .turnazione input, .turnazione button {
             width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-            font-weight: bold;
+            padding: 12px;
             margin-top: 10px;
-        }
-
-        .sidebar button:hover {
-            background-color: #0056b3;
-        }
-
-        .turnazione input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
+            border-radius: 8px;
+            border: none;
             background-color: #333;
             color: white;
-            border: none;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
         }
 
-        .turnazione button {
-            width: 100%;
-            padding: 10px;
+        .turnazione button, .sidebar-buttons button {
             background-color: #28a745;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-            font-weight: bold;
         }
 
-        .turnazione button:hover {
+        .turnazione button:hover, .sidebar-buttons button:hover {
             background-color: #218838;
         }
 
-        .chart-container {
+        .tabella-container {
             width: 100%;
-            height: 250px;
+            margin-top: 20px;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #222;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        table th {
+            background-color: #333;
+            color: #4caf50;
+        }
+
+        table tr:hover {
+            background-color: #444;
+            cursor: pointer;
+        }
+
     </style>
-    <!-- Includi Chart.js per il grafico a torta -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -110,42 +153,65 @@
     <!-- Contenuto principale -->
     <div class="main-content">
         <h2>Benvenuto nell'Area Privata</h2>
-        <p>Inserisci i dati nel menu laterale per gestire la turnazione e visualizzare il profilo.</p>
+        <p>Seleziona una sezione dal menu laterale per gestire la turnazione o visualizzare il profilo.</p>
+
+        <div class="tabella-container">
+            <table id="infoTable">
+                <thead>
+                    <tr>
+                        <th>Sezione</th>
+                        <th>Descrizione</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr onclick="showTurnazione()">
+                        <td><i class="fas fa-clock"></i> Turnazione</td>
+                        <td>Gestisci le ore lavorate</td>
+                    </tr>
+                    <tr onclick="showProfilo()">
+                        <td><i class="fas fa-user"></i> Profilo</td>
+                        <td>Visualizza i dettagli del profilo</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Barra laterale -->
-    <div class="sidebar">
-        <div class="turnazione">
-            <h2>Turnazione</h2>
-            <label for="oreLavorate">Ore Lavorate:</label>
-            <input type="number" id="oreLavorate" placeholder="Inserisci le ore" />
-            <button onclick="aggiornaOre()">Aggiungi Ore</button>
-            <p id="totalOre" style="color: #fff; margin-top: 10px;">Ore Totali: 0</p>
-        </div>
+    <!-- Pulsanti laterali per selezionare la sezione -->
+    <div class="sidebar-buttons">
+        <button onclick="toggleSection('turnazione')">Turnazione</button>
+        <button onclick="toggleSection('profilo')">Profilo</button>
+    </div>
 
-        <div class="profilo">
-            <h2>Profilo</h2>
-            <div class="chart-container">
-                <canvas id="oreChart"></canvas>
-            </div>
+    <!-- Sezioni espandibili -->
+    <div class="expand-section" id="turnazioneSection">
+        <h2>Turnazione</h2>
+        <label for="oreLavorate">Ore Lavorate:</label>
+        <input type="number" id="oreLavorate" placeholder="Inserisci le ore" />
+        <button onclick="aggiornaOre()">Aggiungi Ore</button>
+        <p id="totalOre" style="color: #fff; margin-top: 10px;">Ore Totali: 0</p>
+    </div>
+
+    <div class="expand-section" id="profiloSection">
+        <h2>Profilo</h2>
+        <div class="chart-container">
+            <canvas id="oreChart"></canvas>
         </div>
     </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Funzione per gestire la risposta OAuth2 di Discord
-window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    
-    if (code) {
-        // Simula la convalida dell'utente
-        alert('Autenticazione avvenuta con successo!');
-        
-        // Dopo l'autenticazione, mostra l'area privata
-        document.querySelector('.main-content').style.display = 'block';
-        document.querySelector('.sidebar').style.display = 'block';
-    }
+// Funzione per mostrare una sezione espandibile
+function toggleSection(section) {
+    const sections = document.querySelectorAll('.expand-section');
+    sections.forEach((sec) => {
+        sec.classList.remove('active');
+    });
+
+    const sectionElement = document.getElementById(section + 'Section');
+    sectionElement.classList.add('active');
 }
 
 // Inizializza il grafico a torta
