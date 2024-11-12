@@ -133,6 +133,21 @@
 </div>
 
 <script>
+// Funzione per gestire la risposta OAuth2 di Discord
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    
+    if (code) {
+        // Simula la convalida dell'utente
+        alert('Autenticazione avvenuta con successo!');
+        
+        // Dopo l'autenticazione, mostra l'area privata
+        document.querySelector('.main-content').style.display = 'block';
+        document.querySelector('.sidebar').style.display = 'block';
+    }
+}
+
 // Inizializza il grafico a torta
 var ctx = document.getElementById('oreChart').getContext('2d');
 var oreChart = new Chart(ctx, {
